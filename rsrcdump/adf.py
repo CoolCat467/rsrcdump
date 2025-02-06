@@ -14,7 +14,7 @@ class NotADFError(ValueError):
     pass
 
 
-def unpack_adf(adf_data: bytes) -> dict[int, bytes]:
+def unpack_adf(adf_data: bytes) -> dict[int, int | bytes]:
     u = Unpacker(adf_data)
 
     magic, version, filler, num_entries = u.unpack(">LL16sH")
@@ -30,7 +30,7 @@ def unpack_adf(adf_data: bytes) -> dict[int, bytes]:
     for _ in range(num_entries):
         entry_offsets.append(u.unpack(">LLL"))
 
-    entries = {0: filler}  # Entry #0 is invalid -- use it for the filler
+    entries: dict[int, int | bytes] = {0: filler}  # Entry #0 is invalid -- use it for the filler
 
     for entry_id, offset, length in entry_offsets:
         u.seek(offset)
