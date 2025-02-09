@@ -10,7 +10,7 @@ class Unpacker:
         self.data = data
         self.offset = offset
 
-    def unpack(self, fmt: str) -> tuple[int, ...]:
+    def unpack(self, fmt: str) -> tuple[Any, ...]:
         record_length = struct.calcsize(fmt)
         fields = struct.unpack_from(fmt, self.data, self.offset)
         self.offset += record_length

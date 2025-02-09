@@ -103,7 +103,7 @@ def main() -> None:
             converters[restype] = converter
 
 
-    def load_resmap() -> tuple[ResourceFork, dict[int, int | bytes]]:
+    def load_resmap() -> tuple[ResourceFork, dict[int, bytes]]:
         with open(inpath, 'rb') as file:
             data = file.read()
 

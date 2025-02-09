@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, cast
 
 from io import BytesIO
 from struct import pack
@@ -14,10 +14,10 @@ class NotADFError(ValueError):
     pass
 
 
-def unpack_adf(adf_data: bytes) -> dict[int, int | bytes]:
+def unpack_adf(adf_data: bytes) -> dict[int, bytes]:
     u = Unpacker(adf_data)
 
-    magic, version, filler, num_entries = u.unpack(">LL16sH")
+    magic, version, filler, num_entries = cast(tuple[int, int, bytes, int], u.unpack(">LL16sH"))
 
     if ADF_MAGIC != magic:
         raise NotADFError("AppleDouble magic number not found")
@@ -30,7 +30,7 @@ def unpack_adf(adf_data: bytes) -> dict[int, int | bytes]:
     for _ in range(num_entries):
         entry_offsets.append(u.unpack(">LLL"))
 
-    entries: dict[int, int | bytes] = {0: filler}  # Entry #0 is invalid -- use it for the filler
+    entries: dict[int, bytes] = {0: filler}  # Entry #0 is invalid -- use it for the filler
 
     for entry_id, offset, length in entry_offsets:
         u.seek(offset)

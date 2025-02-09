@@ -54,7 +54,7 @@ class Resource:
 
 @dataclass
 class ResourceFork:
-    tree: dict[ResType, dict[str | bytes | int, Resource]] = field(default_factory=dict)
+    tree: dict[ResType, dict[int, Resource]] = field(default_factory=dict)
     "Map of all resources in the resource fork."
 
     junk_nextresmap: int = 0
@@ -83,7 +83,7 @@ class ResourceFork:
         s += ")"
         return s
 
-    def __getitem__(self, key: str | bytes) -> dict[str | bytes | int, Resource]:
+    def __getitem__(self, key: str | bytes) -> dict[int, Resource]:
         if type(key) is str:
             key = parse_type_name(key)
         if type(key) is not bytes:

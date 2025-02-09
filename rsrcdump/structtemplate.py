@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import base64
 import struct
-from typing import Any, Generator, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, TypeVar
+from collections.abc import Generator
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing_extensions import Self, TypeAlias
+
+T = TypeVar("T")
+JSONScalar: TypeAlias = str | bytes | int | float
 
 
 class StructTemplate:
@@ -95,7 +99,7 @@ class StructTemplate:
         values = struct.unpack_from(self.format, data, offset)
         return self.tag_values(values)
 
-    def tag_values(self, values: tuple[str | int, ...]) -> dict[str, str | int] | str | int | tuple[str | int, ...]:
+    def tag_values(self, values: tuple[T, ...]) -> dict[str, T] | T | tuple[T, ...]:
         if self.field_names:
             # We have some field names: return name-tagged values in a dict
             assert len(self.field_names) == len(values)
@@ -113,7 +117,7 @@ class StructTemplate:
             # Multiple-element structure but no field names: return the tuple
             return values
 
-    def pack(self, obj: list[str] | str) -> bytes:
+    def pack(self, obj: list[JSONScalar] | dict[str, JSONScalar] | JSONScalar) -> bytes:
         if not self.is_list:
             return self.pack_record(obj)
         else:
@@ -123,9 +127,10 @@ class StructTemplate:
                 buf += self.pack_record(item)
             return buf
 
-    def pack_record(self, json_obj: list[str] | dict[str, str] | str) -> bytes:
-        def process_json_field(_field_format: str, _field_value: str | bytes) -> str | bytes:
+    def pack_record(self, json_obj: list[JSONScalar] | dict[str, JSONScalar] | JSONScalar) -> bytes:
+        def process_json_field(_field_format: str, _field_value: JSONScalar) -> JSONScalar:
             if _field_format.endswith("s"):
+                assert isinstance(_field_value, (str, bytes))
                 return base64.b16decode(_field_value)
             else:
                 return _field_value
