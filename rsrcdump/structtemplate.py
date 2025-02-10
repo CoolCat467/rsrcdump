@@ -9,7 +9,8 @@ if TYPE_CHECKING:
     from typing_extensions import Self, TypeAlias
 
 T = TypeVar("T")
-JSONScalar: TypeAlias = str | bytes | int | float
+JSONScalar: TypeAlias = str | bytes | int | float | bool
+JSONPackable: TypeAlias = list[JSONScalar] | dict[str, JSONScalar] | JSONScalar
 
 
 class StructTemplate:
@@ -117,7 +118,7 @@ class StructTemplate:
             # Multiple-element structure but no field names: return the tuple
             return values
 
-    def pack(self, obj: list[JSONScalar] | dict[str, JSONScalar] | JSONScalar) -> bytes:
+    def pack(self, obj: JSONPackable) -> bytes:
         if not self.is_list:
             return self.pack_record(obj)
         else:
@@ -127,7 +128,7 @@ class StructTemplate:
                 buf += self.pack_record(item)
             return buf
 
-    def pack_record(self, json_obj: list[JSONScalar] | dict[str, JSONScalar] | JSONScalar) -> bytes:
+    def pack_record(self, json_obj: JSONPackable) -> bytes:
         def process_json_field(_field_format: str, _field_value: JSONScalar) -> JSONScalar:
             if _field_format.endswith("s"):
                 assert isinstance(_field_value, (str, bytes))

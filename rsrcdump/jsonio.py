@@ -57,7 +57,6 @@ def resource_fork_to_json(
         res_dirpath = os.path.join(outpath + "_resources", res_dirname)
 
         for res_id, res in res_dir.items():
-            assert isinstance(res_id, (int, bytes))
             if not quiet:
                 print(F"{res.type_str:4} {res.num:6} {len(res.data):8}  {res.name_str}")
 
@@ -95,18 +94,8 @@ def resource_fork_to_json(
                 else:
                     sanitized_name = ""
                 if sanitized_name:
-                    # Subclass of "int" and "bytes" cannot exist: would
-                    # have incompatible method signatures
-                    # Statement is unreachable
-                    ##if isinstance(res_id, bytes):
-                    ##    res_id = res_id.decode("utf-8")
                     filename = F"{res_id}.{sanitized_name}{ext}"
                 else:
-                    # Subclass of "int" and "bytes" cannot exist: would
-                    # have incompatible method signatures
-                    # Statement is unreachable
-                    ##if isinstance(res_id, bytes):
-                    ##    res_id = res_id.decode("utf-8")
                     filename = F"{res_id}{ext}"
                 wrapper['file'] = F"{res_dirname}/{filename}"
                 with open(os.path.join(res_dirpath, filename), 'wb') as extfile:
