@@ -10,6 +10,9 @@ description = "Extract and convert Mac resource forks"
 authors = ["Iliyas Jorio <github@jor.io>"]
 license = "MIT"
 readme = "README.md"
+classifiers = [
+    "Typing :: Typed",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
